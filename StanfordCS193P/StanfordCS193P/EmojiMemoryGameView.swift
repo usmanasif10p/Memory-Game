@@ -9,8 +9,13 @@ import SwiftUI
 import Combine
 
 struct EmojiMemoryGameView: View { // View should be stateless, declared and reactive
+    
+    /*
+     @ObservedObject VS @StateObject in terms of lifetime and the scope of it
+     */
+    
     //@ObservedObject var viewModel: EmojiMemoryGame = EmojiMemoryGame() // serious NO, shouldn't be init here
-    //@StateObject var viewModel: EmojiMemoryGame = EmojiMemoryGame() // serious NO, shouldn't be init here, if its invitable then use @StateObject otherwise below is ideal
+    //@StateObject var viewModel: EmojiMemoryGame = EmojiMemoryGame() //
     @ObservedObject var viewModel: EmojiMemoryGame // Reactive-UI @ObservedObject if there something changed redraw views
     
 //    let emojis = ["👻", "🎃", "🧟‍♂️", "🧟‍♀️", "👹", "👻", "🎃", "🧟‍♂️", "🧟‍♀️"] // move to the model
@@ -33,6 +38,7 @@ struct EmojiMemoryGameView: View { // View should be stateless, declared and rea
         VStack {
             ScrollView {
                 cards
+                    .animation(.default, value: viewModel.cards)
             }
 //            Spacer()
 //            cardCountAdjusters
@@ -45,11 +51,14 @@ struct EmojiMemoryGameView: View { // View should be stateless, declared and rea
     
     private var cards: some View {
         // LazyVGrid(columns: [GridItem(), GridItem(), GridItem()]) {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 144), spacing: 0)], spacing: 0) {
-            ForEach(0..<viewModel.cards.count, id: \.self) { index in
-                CardView(viewModel.cards[index])
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 77), spacing: 0)], spacing: 0) {
+            ForEach(viewModel.cards) { card in
+                CardView(card)
                     .aspectRatio(2/3, contentMode: .fit)
                     .padding(4)
+                    .onTapGesture {
+                        viewModel.choose(card)
+                    }
             }
         }
     }
@@ -117,9 +126,12 @@ struct CardView: View {
                     .font(.system(size: 200))
                     .minimumScaleFactor(0.01)
                     .aspectRatio(1, contentMode: .fit)
-            }.opacity( card.isFaceUp ? 1 : 0 )
-            base.fill().opacity( card.isFaceUp ? 0 : 1 )
+            }
+            .opacity( card.isFaceUp ? 1 : 0 )
+            base.fill()
+                .opacity( card.isFaceUp ? 0 : 1 )
         }
+        .opacity(card.isFaceUp || !card.isMatched ? 1 : 0)
         .foregroundStyle(.orange) // view modifiers can apply from outside toward inside views
         //        .onTapGesture {
         //            isFaceUp = !isFaceUp

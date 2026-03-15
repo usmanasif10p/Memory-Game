@@ -12,13 +12,15 @@ import Combine
 //    ["👻", "🎃", "🧟‍♂️", "🧟‍♀️", "👹", "👻", "🎃", "🧟‍♂️", "🧟‍♀️"][index]
 //}
 
+
+// MARK: THE VIEW MODEL
 class EmojiMemoryGame: ObservableObject { // Reactive-UI ObservableObject
 //    var objectWillChange: ObservableObjectPublisher
     
-    private static let emojis = ["👻", "🎃", "🧟‍♂️", "🧟‍♀️", "👹", "👻", "🎃", "🧟‍♂️", "🧟‍♀️"] // static means make it global but namespace inside EmojiMemoryGame.emojis
+    private static let emojis = ["👻", "🎃", "🧟‍♂️", "🧟‍♀️", "👹", "🏮", "🕸️", "🕷️", "🦇"] // static means make it global but namespace inside EmojiMemoryGame.emojis
         
     private static func createMemoryGame() -> MemoryGame<String> {
-        MemoryGame(numberOfPairsOfCards: 4) { pairIndex in
+        MemoryGame(numberOfPairsOfCards: 8) { pairIndex in
             if emojis.indices.contains(pairIndex) {
                 return emojis[pairIndex]
             } else {
